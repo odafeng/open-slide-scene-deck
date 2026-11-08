@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Records a full walkthrough of a deck as a video: presses → once per page with a per-page dwell.
-// usage: PW=<playwright module> [EXE=<chrome>] [DWELL_JSON='{"1":3500,"8":8500}'] node record-walkthrough.cjs <url> <pages> <outDir>
+// usage: PW=<playwright module> [EXE=<chrome>] [DWELL_JSON='{"1":3500,"8":8500}'] [STEPS_JSON='{"16":2}'] node record-walkthrough.cjs <url> <pages> <outDir>
+//   STEPS_JSON: pages that use <Steps> get that many extra → presses, 3.5 s apart, after their dwell.
 // Then: ffmpeg -i <outDir>/*.webm -c:v libx264 -crf 20 -pix_fmt yuv420p -movflags +faststart walkthrough.mp4
 const fs = require('fs');
 const { chromium } = require(process.env.PW || 'playwright');
@@ -10,6 +11,7 @@ if (!url || !nPages || !out) {
   process.exit(2);
 }
 const dwell = Object.assign({ default: 5500 }, JSON.parse(process.env.DWELL_JSON || '{}'));
+const steps = JSON.parse(process.env.STEPS_JSON || '{}');
 const wait = (p) => dwell[p] ?? dwell.default;
 (async () => {
   const browser = await chromium.launch({ executablePath: process.env.EXE || undefined, headless: false, args: ['--window-size=1920,1080'] });
@@ -25,6 +27,10 @@ const wait = (p) => dwell[p] ?? dwell.default;
   for (let p = 2; p <= nPages; p++) {
     await page.keyboard.press('ArrowRight');
     await page.waitForTimeout(wait(p));
+    for (let s = 0; s < (steps[p] || 0); s++) {
+      await page.keyboard.press('ArrowRight');
+      await page.waitForTimeout(3500);
+    }
   }
   console.log('walkthrough ms:', Date.now() - t0);
   const v = page.video();

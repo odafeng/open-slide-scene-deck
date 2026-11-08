@@ -39,6 +39,12 @@ Everything above the line `/* The scene */` in `template/index.tsx` is the engin
 
 Card reveals stagger 80 ms apart through `<R i={n}>`. The card root fades with its children; a card whose box stays while its text fades lingers as an empty rectangle.
 
+## Source code and diagrams on cards
+
+For a developer audience, put the real lines on the card: a small `Code` block (monospace on a darker panel, line numbers that match the repository, keyword and string colours) under the bullets, four lines at most. Build diagrams from divs and flex rows (boxes, brackets, a row of minute blocks, a double-line "pipe" with payload labels), not from images, so they inherit the palette and can be revealed in stages.
+
+Speaker-paced reveals inside a card use open-slide's `<Steps>` / `<Step>`: the always-visible part first, then one `<Step>` per beat. Two rules: hidden steps keep their layout, so design the card at its final height; and the copy of the previous shot's HUD that the engine renders for the fade-out (`out` is true) must be the fully expanded tree **without** `Steps`, otherwise the stale step group steals the next shot's first keypress. Tell the walkthrough recorder how many extra presses a page needs (`STEPS_JSON`).
+
 ## Close-up plates
 
 A plate is a separately generated image placed in the world at the scale where its subject matches the painted one, masked with a radial gradient. Rules:
