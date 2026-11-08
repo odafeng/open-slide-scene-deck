@@ -10,9 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # Node 24 ships npm 11, which wrote package-lock.json; npm 10 rejects its platform-specific
+      # optional packages (EBADPLATFORM on @esbuild/aix-ppc64).
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
       - uses: actions/setup-python@v5
         with:
