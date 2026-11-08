@@ -1,0 +1,23 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+        args: ['--maxkb=2048']
+  - repo: local
+    hooks:
+      - id: typecheck
+        name: typecheck template
+        entry: npm run typecheck
+        language: system
+        pass_filenames: false
+        files: \.(tsx?|json)$
+      - id: check-scripts
+        name: syntax-check scripts
+        entry: npm run check:scripts
+        language: system
+        pass_filenames: false
+        files: ^scripts/
